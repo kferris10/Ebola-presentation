@@ -49,7 +49,8 @@ m <- get_map("liberia", zoom = 7)
 
 ggmap(m) + 
   geom_polygon(aes(x = lon, y = lat, fill = Location), alpha = I(.3), 
-               data = lib_coords)
+               data = lib_coords) + 
+  scale_fill_discrete(guide = F)
 
 # saving -----------------------------------------------
 
