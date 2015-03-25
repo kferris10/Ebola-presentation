@@ -1,0 +1,44 @@
+---
+title: "Ebola Data"
+author: "Kevin"
+date: "Thursday, March 19, 2015"
+output: pdf_document
+---
+
+An example of the data I have.
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = F, 
+                      message = F, 
+                      fig.width = 6, 
+                      fig.height = 4)
+options(show.signif.stars = F, 
+        digits = 3)
+set.seed(42)
+```
+
+```{r ebola-data}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(ggmap)
+library(animation)
+library(animint)
+library(maptools)
+library(rgdal)
+
+load("lib_ebola.RData")
+lib_ebola
+```
+
+The data over time
+
+```{r liberia-time}
+lib_ebola %>% 
+  select(Date:Location, Total_suspected_cases) %>% 
+  filter(!is.na(Total_suspected_cases)) %>% 
+  qplot(Date, Total_suspected_cases, data = ., geom = "line", 
+        colour = Location, size = I(1.1)) + 
+  theme_bw()
+```
+
