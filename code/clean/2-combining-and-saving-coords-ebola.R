@@ -14,7 +14,7 @@ county_dat <- lib_ebola %>%
   select(-Country, -lon, -lat) %>% 
   filter(Location != "National") %>% 
   inner_join(lib_coords) %>% 
-  select(Location, lon:order, Date:Total_suspected_cases)
+  select(Location, Population, lon:order, Date:Total_suspected_cases)
 
 # national data -------------------------------------------
 
@@ -26,7 +26,7 @@ national_dat <- lib_ebola %>%
 
 county_centers <- lib_ebola %>% 
   filter(Location != "National") %>% 
-  select(Location, lon, lat) %>% 
+  select(Location, Population, lon, lat) %>% 
   distinct()
 
 # saving --------------------------------------------------
