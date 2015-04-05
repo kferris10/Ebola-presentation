@@ -4,6 +4,20 @@ library(lubridate)
 library(stringr)
 library(tidyr)
 library(ggmap)
+library(rvest)
+
+# county populations --------------------------------------
+
+pops_scrape <- html("http://en.wikipedia.org/wiki/Counties_of_Liberia") %>% 
+  html_nodes("#mw-content-text .multicol .wikitable") %>% 
+  html_table()
+pops_clean <- pops_scrape[[1]] %>% 
+  setNames(c("id", "Location", "Capital", "Established", "Area", "Population")) %>% 
+  tbl_df() %>% 
+  mutate_each(funs(x = str_replace_all(., ",", "")), Area, Population) %>% 
+  mutate_each(funs(as.numeric), Area, Population) %>% 
+  select(Location, Population) %>% 
+  bind_rows(data.frame(Location = "National", Population = 3476608))
 
 # clean-liberia -------------------------------------------
 
@@ -79,13 +93,14 @@ x <- dat_clean %>%
            str_replace_all(" County, Liberia", "") %>% 
            str_replace_all("Liberia", "National"))
 
-# merge coordinates with data --------------------------
+# merge data with coordinates, population --------------------------
 
 lib_ebola <- dat_clean %>% 
   inner_join(x) %>% 
+  inner_join(pops_clean) %>% 
   arrange(Location, Date) %>% 
   mutate(Country = "Liberia") %>% 
-  select(Country, Location, lon, lat, Date, 
+  select(Country, Location, Population, lon, lat, Date, 
          Case_Fatality_Rate_CFR_Confirmed_Probable_Cases:Total_suspected_cases)
 
 # example plot for testing
