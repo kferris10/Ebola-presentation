@@ -1,0 +1,40 @@
+---
+title: "Examining the Spread of Ebola in Western Africa"
+author: "Kevin"
+date: "April 09, 2015"
+output: ioslides_presentation
+---
+
+## The Data
+
+Image of raw data
+Note that row and columns are backwards
+tidyr and dplyr for cleaning
+rhandsontable of cleaned data
+
+## Thoughts
+
+1. How did things change across time?
+
+## Disease Rate across time
+
+time series plot - morris(?)
+
+## Thoughts
+
+1. How did things change across time?
+2. We have location and time, so visualize what happens at locations over time.
+
+## Spread of Ebola across Time
+
+Animint plot
+
+## Adjust for Population
+
+suspected cases / contacts seen
+
+
+
+
+
+
