@@ -195,6 +195,7 @@ dat_plot %>%
 
 ```{r county_death_rate_animint}
 # over time
+# can just adjust the example from county_death_rate2
 p_time <- ggplot() + 
   make_tallrect(data = ani_dat, "Date") + 
   geom_line(aes(x = Date, y = Total_suspected_cases, group = Location, colour = Location, 
