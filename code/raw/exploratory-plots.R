@@ -46,18 +46,17 @@ qplot(Date, Total_suspected_cases,
 ggm <- get_map("liberia", zoom = 7)
 county_dat2 <- county_dat %>% 
   filter(Date == ymd("2014-11-24")) %>% 
-  mutate(prop = Total_death_s_in_confirmed_probable_suspected_cases / Contacts_seen)
+  mutate(prop = Total_death_s_in_confirmed_probable_suspected_cases / Population)
 ggmap(ggm) + 
   geom_polygon(aes(x = lon, y = lat, group = Location, fill = prop), 
                data = county_dat2, alpha = I(.3))
+
+# animint plot of proportion over time ----------------------
+
 
 m <- leaflet() %>% 
   addTiles() %>% 
   setView(-9.429499, 6.428055, zoom = 7)
 m
-
-
-
-
 m %>% addPolylines(lng = ~lon, lat = ~lat, layerId = ~location, 
                    data = county_dat2)
