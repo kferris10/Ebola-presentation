@@ -349,5 +349,20 @@ structure(ani_list, class = "animint")
 #              description = "Spread of Ebola in Liberia, 2014")
 ```
 
+## Thanks
+
+* The R Core Team
+* [RStudio](http://www.rstudio.com/) for R Markdown
+* Caitlin Rivers for putting together the [ebola](https://github.com/cmrivers/ebola) data
+* [Joe Cheng](https://github.com/jcheng5) and [Yihui Xie](https://github.com/yihui) for the [leaflet package](https://github.com/rstudio/leaflet)
+* Jonathan Owen for the [rhandsontable package](https://github.com/jrowen/rhandsontable)
+* [Hadley Wickham](http://had.co.nz/) for the `dplyr`, `tidyr`, and `ggplot2` packages
+* [Kenton Russell](http://timelyportfolio.blogspot.com/) for the [imageR](https://github.com/timelyportfolio/imageR) and [rcdimple](https://github.com/timelyportfolio/rcdimple) packages
+* Bob Rudis for the [streamgraph package](https://github.com/hrbrmstr/streamgraph)
+* [Toby Dylan Hocking](https://github.com/tdhock), [Susan VanderPlas](https://github.com/srvanderplas), and [Carson Sievert](http://cpsievert.github.io/) for the [animint package](https://github.com/tdhock/animint)
+* [Ramnath Vaidanathan](http://ramnathv.github.io/), the RStudio people, and Kenton Russell for the [htmlwidgets package](http://www.htmlwidgets.org/)
+* [Mike Bostock](http://bost.ocks.org/mike/) for [D3.js](http://d3js.org/) 
+
+
 
 

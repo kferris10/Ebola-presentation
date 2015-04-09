@@ -23,3 +23,10 @@ h1, h2, h3, h4, h5, h6 {
 #the-data img {
   border: 2px solid darkblue;
 }
+
+#thanks li {
+  font-family: 'Raleway', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 300;
+}
