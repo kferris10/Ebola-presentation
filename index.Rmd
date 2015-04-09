@@ -9,7 +9,7 @@ output:
     widescreen: true
     logo: figures/MSU-vert.png
 header-includes:  
-  - <link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+  - <link href="http://fonts.googleapis.com/css?family=Raleway:100" rel="stylesheet" type="text/css">
   - <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
 ---
 
@@ -127,7 +127,7 @@ m
 
 ## The Data
 
-The raw data [available on GitHub](https://github.com/cmrivers/ebola)
+The raw data are [available on GitHub](https://github.com/cmrivers/ebola).  Here is a screenshot.
 
 ![Ebola data](figures/raw-cmrivers-data.png)
 
@@ -232,6 +232,7 @@ lib_ebola %>%
   mutate(rate = Total_death_s_in_confirmed_probable_suspected_cases / Population * 1000) %>% 
   qplot(Date, rate, data = ., 
         group = Location, geom = "line", colour = Location) + 
+  scale_colour_discrete(guide = F) + 
   labs(y = expression(Deaths/1000), title = "Spread of Ebola in 2014 by County") 
 ```
 
@@ -273,8 +274,10 @@ dat_plot %>%
     inputFormat = "%Y-%m-%d",
     outputFormat = "%b %Y %M",
     timePeriod = htmlwidgets::JS('d3.time.months'),
-    timeInterval = 1
+    timeInterval = 1, 
+    title = ""
   ) %>% 
+  yAxis(title = "Deaths / 1000") %>% 
   add_legend()
 ```
 
