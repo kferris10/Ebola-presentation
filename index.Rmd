@@ -1,5 +1,6 @@
 ---
 title: "Examining the Spread of Ebola in Western Africa"
+subtitle: "What Happened in 2014?"
 author: "Kevin"
 date: "April 09, 2015"
 output:
@@ -22,7 +23,7 @@ knitr::opts_chunk$set(echo = F,
                       results = "asis", 
                       comment = "#>", 
                       fig.align = "center", 
-                      fig.width = 8, 
+                      fig.width = 9, 
                       fig.height = 5)
 options(show.signif.stars = F, 
         digits = 4)
@@ -39,6 +40,10 @@ load("data/clean/lib_national_data.RData")
 load("data/clean/lib_county_data.RData")
 # loading county data
 load("data/clean/lib_ebola.RData")
+# loading coordinates of Liberia counties
+load("data/clean/Lib-county-coords.RData")
+# county centers and their names
+load("data/clean/county_center.RData")
 ```
 
 ## The Data
@@ -58,7 +63,7 @@ The raw data [available on GitHub](https://github.com/cmrivers/ebola)
 
 The cleaned data from the month of July
 
-```{r clean_data_handsontable}
+```{r clean_data_handsontable, results='asis'}
 library(rhandsontable)
 county_dat %>% 
   select(-lon, -lat, -id, -order) %>% 
@@ -121,6 +126,7 @@ intense(
 
 ```{r county_line_plot}
 lib_ebola %>% 
+  filter(Location != "National") %>% 
   qplot(Date, Total_death_s_in_confirmed_probable_suspected_cases, data = ., 
         group = Location, geom = "line", colour = Location) + 
   scale_colour_discrete(guide = F) + 
@@ -129,7 +135,7 @@ lib_ebola %>%
 
 ## Map of Liberia
 
-```{r liberia-leaflet}
+```{r liberia-leaflet, results='asis'}
 library(leaflet)
 m <- leaflet() %>% 
   addTiles() %>% 
@@ -148,7 +154,7 @@ lib_ebola %>%
   labs(y = expression(Deaths/1000), title = "Spread of Ebola in 2014 by County") 
 ```
 
-## Removing 10/28 Data
+## Removing 10/28 and 11/4 Data
 
 ```{r county_death_rate2}
 # setting up cleaned data set for next few plots
@@ -156,7 +162,7 @@ dat_plot <- lib_ebola %>%
   filter(Location != "National") %>% 
   mutate(Rate = Total_death_s_in_confirmed_probable_suspected_cases / Population * 1000 %>% round(3), 
          Date = ymd(Date)) %>% 
-  filter(Date != ymd("2014-10-28")) %>% 
+  filter(Date != ymd("2014-10-28"), Date != ymd("2014-11-04")) %>% 
   select(Date, Location, Rate)
 dat_plot %>% 
   qplot(Date, Rate, data = ., 
@@ -166,7 +172,7 @@ dat_plot %>%
 
 ## Streamgraph Visualization
 
-```{r county_death_rate_streamgraph}
+```{r county_death_rate_streamgraph, results='asis'}
 library(streamgraph)
 dat_plot %>% 
   filter(!is.na(Rate)) %>% 
@@ -175,7 +181,7 @@ dat_plot %>%
 
 ## Dimple Visualization
 
-```{r county_death_rate_dimple}
+```{r county_death_rate_dimple, results='asis'}
 library(rcdimple)
 dat_plot %>% 
   filter(!is.na(Rate)) %>% 
@@ -191,46 +197,72 @@ dat_plot %>%
   add_legend()
 ```
 
-## Animated Example
+## Animation over time
 
-```{r county_death_rate_animint}
-# over time
-# can just adjust the example from county_death_rate2
+This is better when viewed in [another tab](http://bl.ocks.org/kferris10/398cf4bbf50a6291ec1d).  Here's a screenshot.
+
+![Animint-visualization](figures/animint_screenshot.png)
+
+```{r county_death_rate_animint, eval=FALSE}
+library(animint)
+# data to plot with animint
+time_dat_animint <- dat_plot %>% 
+  filter(!is.na(Rate)) %>% 
+  mutate(Date_num = as.numeric(Date)) %>% 
+  data.frame()
+# data of coordinates for each county for each data
+map_dat_animint <- county_dat %>% 
+  mutate(Rate = Total_death_s_in_confirmed_probable_suspected_cases / Population * 1000 %>% round(3), 
+         Date = ymd(Date)) %>% 
+  filter(Date != ymd("2014-10-28"), Date != ymd("2014-11-04"), !is.na(Rate)) %>% 
+  select(Date, Location, Rate, lon, lat, order) %>% 
+  arrange(Location, order) %>% 
+  mutate(Date_num = as.numeric(Date)) %>% 
+  data.frame()
+# county centers so I can add a text label
+county_centers <- county_centers %>% 
+  bind_rows(data.frame(Location = "Rivercess", Population = 71509, lon = -9.456, lat = 5.903))
+# coordinates of liberia counties loaded in setup chunk; called lib_coords
+
+# plot over time
 p_time <- ggplot() + 
-  make_tallrect(data = ani_dat, "Date") + 
-  geom_line(aes(x = Date, y = Total_suspected_cases, group = Location, colour = Location, 
+  make_tallrect(data = time_dat_animint, "Date_num") + 
+  geom_line(aes(x = Date_num, y = Rate, group = Location, colour = Location, 
                 showSelected = Location, clickSelects = Location), 
-            data = ani_dat) + 
-  scale_x_continuous(breaks = c(1.405e9, 1.41e9, 1.415e9), 
-                     labels = c("July", "September", "November")) + 
+            data = time_dat_animint) + 
   theme_animint(width = 350) + 
-  ggtitle("Ebola Cases in Liberia in 2014") + 
-  ylab("Cumulative Suspected Cases")
+  scale_x_continuous(breaks = seq(1.4025e9, 1.4175e9, by = .0025e9), 
+                     labels = c("Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), 
+                     name = "") + 
+  labs(y = "Deaths / 1000")
 
 # map
 p_map <- ggplot() + 
   geom_polygon(aes(lon, lat, group = Location), 
                fill = "white", colour = "grey", alpha = I(.3), 
-               data = lib_coords) +                                      ## counties
-  geom_polygon(aes(lon, lat, group = Location, fill = Total_suspected_cases, alpha = Total_suspected_cases, 
-                   showSelected = Date, clickSelects = Location), 
-               colour = "grey", data = map_dat) +         ## shaded polygons
-  geom_text(aes(lon, lat, label = Location), data = cty_names) +         ## county labels
+               data = lib_coords) +                    ## draw counties
+  geom_polygon(aes(lon, lat, group = Location, fill = Rate, alpha = Rate, 
+                   showSelected = Date_num, clickSelects = Location), 
+               colour = "grey", data = map_dat_animint) +   ## shaded polygons
+  geom_text(aes(lon, lat, label = Location), data = county_centers) + ## county labels
   scale_fill_gradient2(low = "#f2f0f7", mid = "#cbc9e2", high = "#6a51a3") + 
   scale_alpha_continuous(guide = F) + 
-  ggtitle("Ebola Cases in Liberia") + 
-  xlab("Longitude") + 
-  ylab("Latitude")
+  scale_x_continuous(name = "", breaks = NULL) + 
+  scale_y_continuous(name = "", breaks = NULL) + 
+  theme(axis.line = element_blank()) + 
+  theme_animint(width = 350)
 
 # animint
 ani_list <- list(timeLine = p_time, 
                  ebolaMap = p_map, 
-                 time = list(variable = "Date", ms = 250), 
+                 time = list(variable = "Date_num", ms = 250), 
                  selector.types = list(Location = "multiple"), 
-                 first = list(Location = unique(map_dat$Location)))
-# works
-animint2dir(ani_list, out.dir = "ebola_viz", open.browser = FALSE)
-servr::httd("ebola_viz")
+                 first = list(Location = unique(map_dat_animint$Location)))
+# printing in knitr
+structure(ani_list, class = "animint")
+# posting as its own file
+# animint2gist(ani_list, out.dir = "ebola_viz", 
+#              description = "Spread of Ebola in Liberia, 2014")
 ```
 
 
