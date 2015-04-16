@@ -3,6 +3,14 @@ slide {
   background: url(figures/cream_dust.png) repeat 0 0;
 }
 
+.title-slide {
+    background: url(figures/liberia-background.png) repeat 0 0;
+    opacity: 0.4;
+    filter: alpha(opacity=40); /* For IE8 and earlier */
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
 h1, h2 {
   padding: 5px;
   padding-left: 10px;
